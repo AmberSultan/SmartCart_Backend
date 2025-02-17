@@ -1,0 +1,114 @@
+import Dish from "../models/dishmodel.js";
+import multer from "multer";
+import path from "path";
+
+// Set up Multer to save images to the 'uploads' folder
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/'); // Save images to 'uploads' folder
+  },
+  filename: (req, file, cb) => {
+    // Save the file with its original name, ensuring no overwriting
+    cb(null, `${Date.now()}_${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+// Create a new dish
+export const createDish = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image uploaded" });
+    }
+
+    const imagePath = path.join('uploads', req.file.filename);
+    const { dishName, categoryId } = req.body;
+
+    const newDish = new Dish({
+      dishName,
+      dishImg: imagePath,
+      categoryId,
+    });
+
+    const savedDish = await newDish.save();
+
+    res.status(201).json({
+      message: "Dish created successfully",
+      dish: savedDish,
+    });
+  } catch (error) {
+    console.error("Error creating dish:", error);
+    res.status(500).json({ message: "Error creating dish", error });
+  }
+};
+
+// Get all dishes
+export const getDishes = async (req, res) => {
+  try {
+    const dishes = await Dish.find().populate("categoryId", "categoryName");
+    res.status(200).json(dishes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching dishes", error });
+  }
+};
+
+// Get dish by ID
+export const getDishById = async (req, res) => {
+  try {
+    const dish = await Dish.findById(req.params.id).populate("categoryId", "categoryName");
+    if (!dish) return res.status(404).json({ message: "Dish not found" });
+    res.status(200).json(dish);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error fetching dish", error });
+  }
+};
+
+// Update a dish
+export const updateDish = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { dishName, categoryId } = req.body;
+
+    let updateData = { dishName, categoryId };
+
+    // Check if a new image is uploaded
+    if (req.file) {
+      const imagePath = path.join('uploads', req.file.filename);
+      updateData.dishImg = imagePath;
+    }
+
+    const updatedDish = await Dish.findByIdAndUpdate(id, updateData, {
+      new: true, // Return the updated document
+      runValidators: true, // Run validation checks
+    });
+
+    if (!updatedDish) return res.status(404).json({ message: "Dish not found" });
+
+    res.status(200).json({
+      message: "Dish updated successfully",
+      dish: updatedDish,
+    });
+  } catch (error) {
+    console.error("Error updating dish:", error);
+    res.status(500).json({ message: "Error updating dish", error });
+  }
+};
+
+// Delete a dish
+export const deleteDish = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedDish = await Dish.findByIdAndDelete(id);
+
+    if (!deletedDish) return res.status(404).json({ message: "Dish not found" });
+
+    res.status(200).json({ message: "Dish deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting dish:", error);
+    res.status(500).json({ message: "Error deleting dish", error });
+  }
+};
