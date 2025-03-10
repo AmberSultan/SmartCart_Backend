@@ -3,44 +3,53 @@ import ConnectDishIngredient from '../models/connectDishIngredientModel.js';
 // Create a new dish ingredient relationship
 export const createDishIngredient = async (req, res) => {
   try {
-    const { dishId, ingredients } = req.body;
+    const { dish, ingredients } = req.body;
 
-    if (!dishId || !ingredients || !Array.isArray(ingredients)) {
+    // Validate the request body
+    if (!dish || !ingredients || !Array.isArray(ingredients)) {
       return res.status(400).json({ message: "Invalid data format." });
     }
 
-    const ingredientEntries = ingredients.map((ingredient) => ({
-      dishId,
-      ingredientId: ingredient.ingredientId,
-      quantity: ingredient.quantity,
-    }));
+    // Validate each ingredient
+    for (const ingredient of ingredients) {
+      if (!ingredient.ingredient || !ingredient.quantity || !ingredient.unit || !ingredient.price) {
+        return res.status(400).json({ message: "All ingredient fields are required." });
+      }
+    }
 
-    const createdIngredients = await ConnectDishIngredient.insertMany(ingredientEntries);
+    // Create a new dish-ingredient relationship
+    const newDishIngredient = new ConnectDishIngredient({
+      dish,
+      ingredients,
+    });
+
+    // Save to the database
+    const createdDishIngredient = await newDishIngredient.save();
 
     res.status(201).json({
       message: "Ingredients added successfully to the dish.",
-      data: createdIngredients,
+      data: createdDishIngredient,
     });
   } catch (error) {
-    res.status(500).json({
-      message: "Error creating dish ingredient",
-      error,
-    });
+    console.error('Error creating dish ingredient:', error);
+    res.status(500).json({ message: "Error creating dish ingredient" });
   }
 };
-
 
 // Get all dish ingredient relationships
 export const getDishIngredients = async (req, res) => {
   try {
-    const dishIngredients = await ConnectDishIngredient.find()
-      .populate('dishId', 'dishName') // Populate dish details
-      .populate('ingredientId', 'ingredientName'); // Populate ingredient details
+    const dishIngredients = await ConnectDishIngredient.find();
+
+    // Check if any dish-ingredient relationships were found
+    if (!dishIngredients || dishIngredients.length === 0) {
+      return res.status(404).json({ message: 'No dish-ingredient relationships found' });
+    }
 
     res.status(200).json(dishIngredients);
   } catch (error) {
     console.error('Error fetching dish ingredients:', error);
-    res.status(500).json({ message: 'Error fetching dish ingredients', error });
+    res.status(500).json({ message: 'Error fetching dish-ingredient relationships' });
   }
 };
 
@@ -49,9 +58,7 @@ export const getDishIngredientById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const dishIngredient = await ConnectDishIngredient.findById(id)
-      .populate('dishId', 'dishName') // Populate dish details
-      .populate('ingredientId', 'ingredientName'); // Populate ingredient details
+    const dishIngredient = await ConnectDishIngredient.findById(id);
 
     if (!dishIngredient) {
       return res.status(404).json({ message: 'Dish Ingredient not found' });
@@ -60,7 +67,7 @@ export const getDishIngredientById = async (req, res) => {
     res.status(200).json(dishIngredient);
   } catch (error) {
     console.error('Error fetching dish ingredient:', error);
-    res.status(500).json({ message: 'Error fetching dish ingredient', error });
+    res.status(500).json({ message: 'Error fetching dish ingredient' });
   }
 };
 
@@ -68,11 +75,23 @@ export const getDishIngredientById = async (req, res) => {
 export const updateDishIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const { dishId, ingredientId, quantity } = req.body;
+    const { ingredients } = req.body;
+
+    // Validate the request body
+    if (!ingredients || !Array.isArray(ingredients)) {
+      return res.status(400).json({ message: "Invalid data format." });
+    }
+
+    // Validate each ingredient
+    for (const ingredient of ingredients) {
+      if (!ingredient.ingredient || !ingredient.quantity || !ingredient.unit || !ingredient.price) {
+        return res.status(400).json({ message: "All ingredient fields are required." });
+      }
+    }
 
     const updatedDishIngredient = await ConnectDishIngredient.findByIdAndUpdate(
       id,
-      { dishId, ingredientId, quantity },
+      { ingredients },
       { new: true } // Return the updated object
     );
 
@@ -86,7 +105,7 @@ export const updateDishIngredient = async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating dish ingredient:', error);
-    res.status(500).json({ message: 'Error updating dish ingredient', error });
+    res.status(500).json({ message: 'Error updating dish ingredient' });
   }
 };
 
@@ -107,6 +126,6 @@ export const deleteDishIngredient = async (req, res) => {
     });
   } catch (error) {
     console.error('Error deleting dish ingredient:', error);
-    res.status(500).json({ message: 'Error deleting dish ingredient', error });
+    res.status(500).json({ message: 'Error deleting dish ingredient' });
   }
 };

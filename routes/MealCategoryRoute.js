@@ -1,18 +1,23 @@
 import express from "express";
-import { createMealCategory, getAllMealCategories, updateMealCategory, deleteMealCategory } from "../controllers/mealCategoryController.js";
+import { 
+    createMealCategory, 
+    getAllMealCategories, 
+    updateMealCategory, 
+    deleteMealCategory 
+} from "../controllers/mealCategoryController.js";
 
 const router = express.Router();
 
-// Route to create a new meal category
-router.post("/createcategory", createMealCategory);
+// Create a new meal category
+router.post("/category", createMealCategory);
 
-// Route to get all meal categories
-router.get("/allcategory", getAllMealCategories);
+// Get all meal categories
+router.get("/category", getAllMealCategories);
 
-// Route to update a meal category by ID
-router.put("/updatecategory/:id", updateMealCategory);
+// Update a meal category by ID
+router.put("/category/:id", updateMealCategory);
 
-// Route to delete a meal category by ID
-router.delete("/deletecategory/:id", deleteMealCategory);
+// Delete a meal category by ID
+router.delete("/category/:id", deleteMealCategory);
 
 export default router;

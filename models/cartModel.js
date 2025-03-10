@@ -16,7 +16,7 @@ const cartSchema = new Schema(
       type: [{
         ingredientId: {
           type: Schema.Types.ObjectId,
-          ref: "Ingredient",
+          ref: "DishIngredient",
           required: true,
         },
         quantity: {

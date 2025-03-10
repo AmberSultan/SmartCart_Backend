@@ -1,33 +1,12 @@
 import Dish from "../models/dishmodel.js";
-import multer from "multer";
-import path from "path";
-
-// Set up Multer to save images to the 'uploads' folder
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Save images to 'uploads' folder
-  },
-  filename: (req, file, cb) => {
-    // Save the file with its original name, ensuring no overwriting
-    cb(null, `${Date.now()}_${file.originalname}`);
-  },
-});
-
-const upload = multer({ storage });
 
 // Create a new dish
 export const createDish = async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
-    }
-
-    const imagePath = path.join('uploads', req.file.filename);
     const { dishName, categoryId } = req.body;
 
     const newDish = new Dish({
       dishName,
-      dishImg: imagePath,
       categoryId,
     });
 
@@ -72,15 +51,7 @@ export const updateDish = async (req, res) => {
     const { id } = req.params;
     const { dishName, categoryId } = req.body;
 
-    let updateData = { dishName, categoryId };
-
-    // Check if a new image is uploaded
-    if (req.file) {
-      const imagePath = path.join('uploads', req.file.filename);
-      updateData.dishImg = imagePath;
-    }
-
-    const updatedDish = await Dish.findByIdAndUpdate(id, updateData, {
+    const updatedDish = await Dish.findByIdAndUpdate(id, { dishName, categoryId }, {
       new: true, // Return the updated document
       runValidators: true, // Run validation checks
     });

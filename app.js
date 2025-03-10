@@ -3,6 +3,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
 
+import dotenv from "dotenv";
+dotenv.config();
+
+
+console.log("CORS Origin:", process.env.CORS_ORIGIN);
+
+
 import userRouter from "./routes/userRoute.js";
 import mealCategoryRouter from "./routes/MealCategoryRoute.js";
 import dishRouter from "./routes/dishRoute.js";
@@ -12,13 +19,16 @@ import cartRouter from "./routes/cartRoutes.js"
 
 const app = express();
 
-// Enable CORS with specific origin and credentials
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN, // Allow only the origin specified in the environment variable
-    credentials: true, // Enable credentials (cookies, authorization headers, etc.)
+    origin: (origin, callback) => {
+      console.log("Request Origin:", origin);
+      callback(null, origin); // Allow all origins dynamically
+    },
+    credentials: true,
   })
 );
+
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
@@ -35,8 +45,8 @@ app.use(cookieParser());
 // Define routes for users and meal categories
 app.use("/users", userRouter);
 app.use("/mealcategory", mealCategoryRouter);
-app.use("/dish", dishRouter);
-app.use("/ingredient", dishIngredientRouter);
+app.use("/dishName", dishRouter);
+app.use("/ingredientDetail", dishIngredientRouter);
 app.use("/recipe-ingredients", connectDishIngredientRouter);
 app.use("/cart", cartRouter);
 

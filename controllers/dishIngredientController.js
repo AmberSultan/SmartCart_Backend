@@ -17,21 +17,17 @@ export const upload = multer({ storage });
 // Create a new dish ingredient
 export const createIngredient = async (req, res) => {
   try {
-    console.log(req.body); // log form data
+    console.log(req.body); // Log form data
     console.log(req.file);
-    
-    if (!req.file) {
-      return res.status(400).json({ message: "No image uploaded" });
-    }
 
     const { ingredientName, price, quantity } = req.body;
-    const imagePath = path.join('uploads', req.file.filename); // Save image path
+    const imagePath = req.file ? path.join('uploads', req.file.filename) : null; // Image is optional
 
     const newIngredient = new DishIngredient({
       ingredientName,
       price,
       quantity,
-      ingredientImg: imagePath,
+      ingredientImg: imagePath, // Only set if an image is uploaded
     });
 
     const savedIngredient = await newIngredient.save();
@@ -76,10 +72,9 @@ export const updateIngredient = async (req, res) => {
 
     let updateData = { ingredientName, price, quantity };
 
-    // Check if a new image is uploaded
+    // Only update image if a new one is uploaded
     if (req.file) {
-      const imagePath = path.join('uploads', req.file.filename);
-      updateData.ingredientImg = imagePath; // Update image path
+      updateData.ingredientImg = path.join('uploads', req.file.filename);
     }
 
     const updatedIngredient = await DishIngredient.findByIdAndUpdate(id, updateData, { new: true });

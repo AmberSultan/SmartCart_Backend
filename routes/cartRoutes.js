@@ -1,14 +1,18 @@
 import express from "express";
-import { addToCart, getCart, removeFromCart } from "../controllers/cartController.js";
+import { addToCart, getCart, removeFromCart} from "../controllers/cartController.js";
+
 const router = express.Router();
 
-// Route to add item to cart
-router.post("/createcart", addToCart);
+// Route to add item to cart (POST)
+router.post("/yourcart/:userId", addToCart);
 
-// Route to get all items in the user's cart
-router.get("/cart/:userId", getCart);
+// Route to get all items in the user's cart (GET)
+router.get("/yourcart/:userId", getCart);
 
-// Route to remove item from the user's cart
-router.delete("/cart/:userId/:cartId", removeFromCart);
+// Route to update an item in the user's cart (PUT)
+// router.put("/yourcart/:userId/:cartId", updateCart);
+
+// Route to clear the user's entire cart (DELETE)
+router.delete("/yourcart/:userId", removeFromCart);
 
 export default router;

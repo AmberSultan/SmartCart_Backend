@@ -17,7 +17,7 @@ const dishIngredientSchema = new Schema(
     },
     ingredientImg: {
       type: String,
-      required: true,
+      // required: true,
     },
   },
   { timestamps: true }

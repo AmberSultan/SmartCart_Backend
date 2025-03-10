@@ -2,23 +2,38 @@ import mongoose from 'mongoose';
 
 const connectDishIngredientSchema = new mongoose.Schema(
   {
-    dishId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Dish', // Reference to the Dish model
-      required: true,
-    },
-    ingredientId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'DishIngredient', // Reference to the DishIngredient model
-      required: true,
-    },
-    quantity: {
+    dish: {
       type: String,
       required: true,
+      trim: true,
     },
+    ingredients: [
+      {
+        ingredient: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        quantity: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        unit: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        price: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+      },
+    ],
   },
   {
-    timestamps: true, // To track creation and modification times
+    timestamps: true,
   }
 );
 

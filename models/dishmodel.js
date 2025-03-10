@@ -7,10 +7,6 @@ const dishSchema = new Schema(
       required: true,
       unique: true, 
     },
-    dishImg: {
-      type: String,
-      required: true, 
-    },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: "MealCategory",

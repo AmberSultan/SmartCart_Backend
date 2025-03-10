@@ -10,10 +10,19 @@ import {
 
 const router = express.Router();
 
-router.post("/createdishingredient", upload.single("image"), createIngredient);
-router.get("/alldishingredient", getIngredients);
-router.get("/getdishingredient/:id", getIngredientById);
-router.put("/updatedishingredient/:id", upload.single("image"), updateIngredient);
-router.delete("/delete/dishingredient/:id", deleteIngredient);
+// Create a new ingredient
+router.post("/ingredient", upload.single("image"), createIngredient);
+
+// Get all ingredients
+router.get("/ingredient", getIngredients);
+
+// Get a specific ingredient by ID
+router.get("/ingredient/:id", getIngredientById);
+
+// Update an ingredient by ID
+router.put("/ingredient/:id", upload.single("image"), updateIngredient);
+
+// Delete an ingredient by ID
+router.delete("/ingredient/:id", deleteIngredient);
 
 export default router;
