@@ -16,6 +16,7 @@ import dishRouter from "./routes/dishRoute.js";
 import dishIngredientRouter from "./routes/dishIngredientRoute.js";
 import connectDishIngredientRouter from "./routes/connectDishIngredientRoute.js";
 import cartRouter from "./routes/cartRoutes.js"
+import checkoutRoute from "./routes/checkoutRoute.js"
 
 const app = express();
 
@@ -49,10 +50,9 @@ app.use("/dishName", dishRouter);
 app.use("/ingredientDetail", dishIngredientRouter);
 app.use("/recipe-ingredients", connectDishIngredientRouter);
 app.use("/cart", cartRouter);
+app.use("/checkoutorder", checkoutRoute)
 
 
-
-// Handle unknown routes
 app.use((req, res) => {
   res.status(404).json({ error: "Route not found" });
 });

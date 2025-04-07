@@ -13,6 +13,6 @@ router.get("/yourcart/:userId", getCart);
 // router.put("/yourcart/:userId/:cartId", updateCart);
 
 // Route to clear the user's entire cart (DELETE)
-router.delete("/yourcart/:userId", removeFromCart);
+router.delete("/yourcart/:userId/:cartId", removeFromCart);
 
 export default router;

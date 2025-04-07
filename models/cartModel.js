@@ -12,12 +12,20 @@ const cartSchema = new Schema(
       ref: "Dish",
       required: true,
     },
+    dishName: { // Added dishName field
+      type: String,
+      required: false, // Optional, as dishId is still the primary key
+    },
     selectedIngredients: {
       type: [{
         ingredientId: {
           type: Schema.Types.ObjectId,
           ref: "DishIngredient",
           required: true,
+        },
+        ingredientName: { // Added ingredientName field
+          type: String,
+          required: false, // Optional, as ingredientId is still the primary key
         },
         quantity: {
           type: Number,
