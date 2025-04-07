@@ -30,6 +30,10 @@ app.use(
   })
 );
 
+app.get('/', (req, res) => {
+  res.status(200).json({ message: "SmartCart Backend is running!" });
+});
+
 
 // Middleware to parse incoming JSON requests
 app.use(express.json());
